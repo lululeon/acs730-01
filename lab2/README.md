@@ -85,6 +85,8 @@ Created systemd service wrapper to start service after network is ready, as a da
   ### systemd service file
   ![systemd unit](evidence/sysd-service.png)
 
+  :point_up: this is where a mistake was made: re-enabled httpd itself, instead of the new `acs730-web` service
+
 </details>
  
 
