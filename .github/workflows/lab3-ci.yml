@@ -7,6 +7,7 @@ on:
   pull_request:
     paths: ['lab3/**', '.github/workflows/lab3-ci.yml']
 
+concurrency: { group: lab3-terraform }
 jobs:
   lint:
     runs-on: ubuntu-latest
@@ -16,4 +17,18 @@ jobs:
         run: |
           shopt -s nullglob
           for f in lab3/scripts/*.sh; do bash -n "$f"; done
+  terraform:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: ${{ vars.AWS_REGION }}
+      - uses: hashicorp/setup-terraform@v3
+      - run: terraform init && terraform validate && terraform plan -out=tfplan
+      - if: github.event_name == 'push'  # apply only on merge
+        run: terraform apply -auto-approve tfplan
 
