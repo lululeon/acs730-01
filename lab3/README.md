@@ -8,5 +8,7 @@ We are using session-scoped secrets instead here as it is simpler to implement. 
 
 
 ## Screenshots
-(to add)
+Added directly to branch after pipeline passed:
+<img width="619" height="362" alt="image" src="https://github.com/user-attachments/assets/d50ddee8-7081-40f5-bdec-698a49116188" />
+
 
