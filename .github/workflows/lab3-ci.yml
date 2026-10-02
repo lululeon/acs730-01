@@ -28,7 +28,11 @@ jobs:
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: ${{ vars.AWS_REGION }}
       - uses: hashicorp/setup-terraform@v3
-      - run: terraform init && terraform validate && terraform plan -out=tfplan
+      - run: |
+          cd lab3
+          terraform init && terraform validate && terraform plan -out=tfplan
       - if: github.event_name == 'push'  # apply only on merge
-        run: terraform apply -auto-approve tfplan
+        run: |
+          cd lab3
+          terraform apply -auto-approve tfplan
 
