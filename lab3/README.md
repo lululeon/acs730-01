@@ -9,7 +9,7 @@ We are using session-scoped secrets instead here as it is simpler to implement. 
 
 ## Screenshots
 Added directly to branch after pipeline passed:
-![first pipeline pass on pull-request](evidence/screenshot1.png)
+![pipeline pass on pull-request](evidence/screenshot3.png)
 
 Added after merge to main:
 ![pipeline pass on merge to main](evidence/screenshot2.png)
