@@ -9,9 +9,8 @@ We are using session-scoped secrets instead here as it is simpler to implement. 
 
 ## Screenshots
 Added directly to branch after pipeline passed:
-<img width="619" height="362" alt="image" src="https://github.com/user-attachments/assets/d50ddee8-7081-40f5-bdec-698a49116188" />
+![first pipeline pass on pull-request](evidence/screenshot1.png)
 
 Added after merge to main:
-<img width="871" height="465" alt="image" src="https://github.com/user-attachments/assets/79e90e3d-f30c-4c1a-bc0a-36a3350a546f" />
-
+![pipeline pass on merge to main](evidence/screenshot2.png)
 
