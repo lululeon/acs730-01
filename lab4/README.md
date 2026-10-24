@@ -19,11 +19,15 @@
 
 ---
 
-# Part 2
+# Part 2 - Pipeline updates
 
 Pipeline screenshot showing pass => intentional fail => pass:
 
 <img width="581" height="184" alt="image" src="https://github.com/user-attachments/assets/d6613e04-22c8-41c5-b9a7-d005e29aceeb" />
+
+### CI Graph
+
+![ci-graph](./evidence/ci-graph.png)
 
 --- 
 ## Investigations / personal notes
