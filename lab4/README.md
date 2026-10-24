@@ -56,6 +56,12 @@ yields table:
 
 The pip cache restores successfully and the install still takes 2 seconds, so that cache is not worth it. The Docker layer cache is worth it only for `build-push-action`: 14 seconds on the first `type=gha` run, 3 seconds on the next. The log line `importing cache manifest` appears on both of those runs, so the step time is the evidence, not the word "hit". The whole workflow is still slower than the 58-second baseline because the job also runs the plain `docker build` and `setup-buildx`.
 
+## Added action and workflow - reusable components
+- **Action**: An action is extra steps inside the test job, on the same machine. The tests need the Python that those steps just installed, so they have to share the machine.
+
+- **Workflow**: The separate workflow is useful because it needs special permissions to push the image. The test job doesn't need those permissions so we separate the build from the test job; it runs on a separate machine.
+
+
 --- 
 ## Investigations / personal notes
 
