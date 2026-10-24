@@ -29,6 +29,33 @@ Pipeline screenshot showing pass => intentional fail => pass:
 
 ![ci-graph](./evidence/ci-graph.png)
 
+## CI Timings
+
+:robot: Note - for expediency prompted AI to generate cmd to fetch data for my runs of interest:
+
+```sh
+for id in 40051260597 40053471458 40053616897; do
+  echo "===== $id ====="
+  gh run view "$id" --json displayTitle,headBranch,jobs --jq '
+    "\(.displayTitle) (\(.headBranch))",
+    (.jobs[] | .name as $job | .steps[] |
+      "\($job)\t\(.name)\t\(((.completedAt | fromdateiso8601) - (.startedAt | fromdateiso8601)))s")
+  '
+  gh run view "$id" --log | grep -iE 'cache (hit|restored|not found|is not found)|importing cache|exporting cache'
+done
+```
+
+yields table:
+
+
+| Step | Baseline | Cache miss | Cache hit | Worth it? |
+|------|----------|------------|-----------|-----------|
+| pip install | 2s (3.11), 4s (3.12) | 2s (both) | 2s (both) | No |
+| Docker build (`docker/build-push-action`) | no gha-cached build; plain `docker build` was 14s | 14s | 3s | Yes for this step |
+| Whole workflow, wall clock | 58s | 1m16s | 1m0s | No |
+
+The pip cache restores successfully and the install still takes 2 seconds, so that cache is not worth it. The Docker layer cache is worth it only for `build-push-action`: 14 seconds on the first `type=gha` run, 3 seconds on the next. The log line `importing cache manifest` appears on both of those runs, so the step time is the evidence, not the word "hit". The whole workflow is still slower than the 58-second baseline because the job also runs the plain `docker build` and `setup-buildx`.
+
 --- 
 ## Investigations / personal notes
 
