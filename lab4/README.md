@@ -12,7 +12,10 @@
 | naive  | python:3.15.1        | 1.15GB | 4s                                        |
 | slim   | python:3.15.1-slim   | 130MB  | 0.7s                                      |
 
-## Naive build
+## Investigations 
+
+<details>
+<summary>### Comparison of the two docker images</summary>
 
 <details>
 <summary>raw output</summary>
@@ -184,9 +187,12 @@ sys     0m0.048s
 </details>
 
 Elapsed time: 0.7s !!
+</details>
 
 
-### Image sizes comparison
+---
+
+# Discussion - Image sizes comparison
 
 The reports showed the following
 
@@ -232,21 +238,22 @@ SIZE      CREATED BY
 
 ![screenshot](./evidence/image-sizes.png)
 
-The size impacts for the naive build are from these lines"
+The size impacts for the naive build are from the initial 12 lines of history: 
 - `17.8MB    RUN /bin/sh -c pip install -r requirements.t…` : the **pip install** command
 - `87MB      RUN /bin/sh -c set -eux;   savedAptMark="$(a…` : seemingly from indirect **apt** behavior
 - `17.9MB    RUN /bin/sh -c set -eux;  apt-get update;  a…` : more **apt** impace (`apt-get update` specifically)
 
-So it seems like download packages and related cacheing bloated the size of the naive build, and there was not opportunity to filter them out via a `.dockerignore` file, introduced later for the slim build.
+So it initially seems like download packages and related cacheing bloated the size of the naive build, and there was no opportunity to filter these out via the `.dockerignore` file that was introduced later for the slim build.
 
-In contrast for the slim build, **pip install** impacts on the build seem to have been constrained at the outset via a `PYTHONDONTWRITEBYTECODE=1`, which:
+In contrast for the slim build, **pip install** impacts on the build were constrained at the outset via a `PYTHONDONTWRITEBYTECODE=1`, which:
   > prevents Python from writing .pyc bytecode and pycache directories to disk, keeping builds and containers cleaner
 
 (:bulb: it turns out that the other setting, `PYTHONUNBUFFERED=1` is more for observability than anything: it stops python from hogging memory with buffered writes to stdout and stderr; if writes immediately to your container logs so you can see what is happening in realtime - useful if there are errors/failures etc).
 
-Lastly, the `FROM` directives are different. The history command uses `head -12` so we don't see the impacts of the first layer. The naive build simply uses `python:latest`. The Slim build uses `python:3.12-slim-bookworm`, with a much smaller footprint. view the full history for each:
+Lastly, the `FROM` directives in the dockerfiles are different. The history command given in the lab used `head -12` so we don't see the impacts of the first few layers. Here's what we see from the full history outputs: 
 
 **naive build, bottom-most layers:**
+The naive build simply uses `python:latest`:
 ```
 657MB     RUN /bin/sh -c set -ex;  apt-get update;  ap…
 185MB     RUN /bin/sh -c set -eux;  apt-get update;  a…
@@ -254,6 +261,7 @@ Lastly, the `FROM` directives are different. The history command uses `head -12`
 120MB     # debian.sh --arch 'amd64' out/ 'trixie' '@1…
 ```
 **slim build, bottom-most layers:**
+The Slim build uses `python:3.12-slim-bookworm`, with a much smaller footprint:
 ```
 8.52MB    RUN /bin/sh -c set -eux;  apt-get update;  a…
 0B        ENV LANG=C.UTF-8
