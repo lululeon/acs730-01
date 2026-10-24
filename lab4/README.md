@@ -16,10 +16,20 @@
 - **REBUILD**: The naive image copies the whole context over, just before `pip install`, but the one-line change to app.py changes what was copied earlier, so that that layer has to be rebuilt, **plus all the layers that came after** including the pip install.
 - **DOCKERIGNORE**: `.dockerignore` kept `.git`, `.github`, `__pycache__`, `.pyc`, `.pytest_cache`, `evidence/`, other `*.png` and `*.md` files, and the Dockerfiles themselves out of the slim build context (474 B sent, versus 205 kB on the naive rebuild).
 
-## Investigations 
+
+---
+
+# Part 2
+
+Pipeline screenshot showing pass => intentional fail => pass:
+
+<img width="581" height="184" alt="image" src="https://github.com/user-attachments/assets/d6613e04-22c8-41c5-b9a7-d005e29aceeb" />
+
+--- 
+## Investigations / personal notes
 
 <details>
-<summary>### Comparison of the two docker images</summary>
+<summary>Comparison of the two docker images</summary>
 
 <details>
 <summary>raw output</summary>
@@ -191,12 +201,8 @@ sys     0m0.048s
 </details>
 
 Elapsed time: 0.7s !!
-</details>
 
-
----
-
-# Discussion - Image sizes comparison
+# Image sizes comparison
 
 The reports showed the following
 
@@ -274,4 +280,4 @@ The Slim build uses `python:3.12-slim-bookworm`, with a much smaller footprint:
 ```
 
 The contrast is clear here: the choice of python image and the underlying linux image also contributed massively to why the naive build was bigger and slower.
-
+</details>
