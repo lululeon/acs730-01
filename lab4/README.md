@@ -10,7 +10,11 @@
 | Image  | Base Image           | Size   | Rebuild Time (after one-line code change) |
 |--------|----------------------|--------|-------------------------------------------|
 | naive  | python:3.15.1        | 1.15GB | 4s                                        |
-| slim   | python:3.15.1-slim   | 130MB  | 0.7s                                      |
+| slim   | python:3.12-slim-bookworm | 130MB | 0.7s                                 |
+
+- **SIZE DIFFs**: `python:latest` versus `python:3.12-slim-bookworm`, adds ~1Gb extra. The pip layers differ by ~11 MB (17.8 MB versus 6.38 MB).
+- **REBUILD**: The naive image copies the whole context over, just before `pip install`, but the one-line change to app.py changes what was copied earlier, so that that layer has to be rebuilt, **plus all the layers that came after** including the pip install.
+- **DOCKERIGNORE**: `.dockerignore` kept `.git`, `.github`, `__pycache__`, `.pyc`, `.pytest_cache`, `evidence/`, other `*.png` and `*.md` files, and the Dockerfiles themselves out of the slim build context (474 B sent, versus 205 kB on the naive rebuild).
 
 ## Investigations 
 
