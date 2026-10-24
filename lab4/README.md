@@ -285,3 +285,4 @@ The Slim build uses `python:3.12-slim-bookworm`, with a much smaller footprint:
 
 The contrast is clear here: the choice of python image and the underlying linux image also contributed massively to why the naive build was bigger and slower.
 </details>
+
