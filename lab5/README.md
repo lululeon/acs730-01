@@ -29,4 +29,8 @@ In that case:
 
 ![no-credentials](./evidence/no-credentials.png)
 
+![merge blocked](./evidence/merge-blocked.png)
+
+![merge allowed](./evidence/merge-allowed.png)
+
 </details>
