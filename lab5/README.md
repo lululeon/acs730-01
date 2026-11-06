@@ -14,6 +14,11 @@ In that case:
   ```
   we are saying that if the create flag is set, we build the (one) s3 bucket. Otherwise we would build zero (no s3 bucket created).
 
+## Design Note
+Localstack design means we get:
+- free sanity checking of infra in CICD instead of using real (expensive) aws resources
+- deterministic CICD: we sidestep the issue with academy accounts where sessions are shortlived and would cause real AWS provisioning to intermittently fail
+
 ## Screenshots
 
 <details>
