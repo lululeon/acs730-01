@@ -11,6 +11,8 @@ provider "aws" {
   skip_credentials_validation = var.use_localstack
   skip_metadata_api_check     = var.use_localstack
   # skip_requester_charged was flagged as not valid
+  # update: I am realising that my "scripts" folder doesn't have any lab5 bootstrapping even though the template repo does?
+  # not stopping to fix rn.
   skip_requesting_account_id = var.use_localstack
   skip_region_validation     = var.use_localstack
 
