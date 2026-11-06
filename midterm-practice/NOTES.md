@@ -16,6 +16,7 @@ Switched to working locally
 - fix the bind port
 - fix correct use of foreach key: `aws_subnet.public[each.key].id`
 - similar fix for ingress ports: plurality: `for_each = var.ingress_ports`
+- ci file: correct path to app
 
 fixed healthcheck
 ![fixed curl healthcheck](evidence/image-4.png)
@@ -26,8 +27,5 @@ fixed tf validate
 
 ## Task 5: git hygiene
 
-<!-- Replace this line with one sentence explaining why deleting the .tfstate
-     file and the credential string in your latest commit is not sufficient
-     by itself. -->
+Delete the tfstate file does not suffice because it will be there in git history. The history for the project would need to be rebuilt.
 
-TODO
