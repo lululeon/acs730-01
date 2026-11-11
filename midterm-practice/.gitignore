@@ -6,3 +6,12 @@ __pycache__/
 # Editors
 .vscode/
 .idea/
+
+# Terraform
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+tfplan
+crash.log
