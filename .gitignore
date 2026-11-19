@@ -7,3 +7,10 @@ credentials
 *.tfstate.*
 tfplan
 crash.log
+
+
+#LL
+**/*.tfstate.*
+**/*.pem
+**/.terraform/
+**/tfplan
