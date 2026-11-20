@@ -1,5 +1,86 @@
 # Lab 6
 
-Instructions for this section will be provided in class and on Blackboard when we reach it.
+## runner-to-instance mechanism
+Not clear initially what was meant by this. An AI analysis of the lab text determined:
+> runner-to-instance mechanism refers to how the machine running Ansible in GitHub Actions gets a connection to the EC2 instances
 
-Put your work for Lab 6 in this folder.
+This would be via Session Manager - no ingress into the target host is needed (or configured) and there is no ssh key available either.
+
+## changed=0 meaning
+This means no resources to change; basically this run is idempotent with the last run (the playbook is idempotent).
+
+## why why deregistering an AMI is not enough
+The AMI will be gone but the EBS that holds the machine image will still be there and billed to your account. The EBS snaphot itself needs to be additionally removed.
+
+## Boot times
+| method | time | tasks |
+|---------|-------------|------------|
+|tf apply + ansible converge | 185s| likely instance launch, SSM agent registration, dnf downloads, service start. :warning: The launch time was not recorded separately. :/|
+| tf deploy golden image| 23s | instance launch, SSM agent registration |
+
+**Qualitatively**, the golden ami was much faster but the timing of the first part likely covered more things or overran, so cannot quantify accurately. It seemed at the time that the ansible playbook took the most time, so I would put the dnf (package downloads) tasks as the most expensive.
+
+  - boot to ready with apply then converge: 185s
+  ![boot to with ansible](./evidence/boot-to-ready-ansible.png)
+
+  - boot to ready time with golden ami: 23s
+    - ![boot to ready golden ami](./evidence/boot-to-ready-golden-ami.png)
+    - ![boot to ready golden ami 2](./evidence/boot-to-ready-golden2.png)
+
+
+## The cost a golden AMI moves rather than removes.
+It moves the convergence steps upstream / earlier in the workflow so that they are done once, before instances are created.
+
+## What breaks with golden AMIs
+While you get faster launches, you also get faster obsolescence in terms of outdated versions, patches etc. Also makes the image a "black box" whereas a playbook allows you to see what goes into the image.
+
+## What breaks with converge-on-boot
+Reliability of the pipeline (e.g. if package mirrors / internet etc is not available, the pipeline hangs or fails).
+
+## Your recommendation, in one sentence
+Golden AMIs when there are a large number of settings that don't change often and a large number of hosts that will be created in the same way.
+
+## SSM bucket-and-region constraint from Part 2
+Unclear what this is asking for. AI analysis yields:
+
+> Session Manager transfers files through an S3 bucket, acs730-lab6-ssm-<account>, which must be in us-east-1. ansible_aws_ssm_region must also be us-east-1 and match the bucket. If they disagree, the first task fails with PermanentRedirect.
+
+## points raised in lab:
+
+### No runner address anywhere in the workflow
+They don't normally address the runner; not sure why this workflow would be any different. Each run is a fresh vm and the workflow only says what type of runner it wants (`runs-on: ubuntu-latest`).
+
+### The tooling goes in near the top, not between apply and converge.
+We don't want the newly provisioned infrastructure hanging around for too long before convergence; that would be an opportunity for out of band changes (someone else running an apply, manual edits that could introduce changes etc): these could change expected conditions found by ansible and ultimately change what convergence does. This in turn can destroy idempotency. 
+
+It's best to prevent that by running convergence as soon as possible after apply.
+
+### session-manager-plugin is installed explicitly
+The runner does not have software / plugins installed locally and it also does not have anything available in aws. So all needed tools must be explicitly installed.
+
+### The retry loop before the playbook
+This emulates what was done locally to allow hosts time to bootup and connect with SSM Manager before going any further (otherwise the convergence step can fail)
+
+# Other Notes
+- pip install was needed as was boto3. fix:
+  ![install fix](./evidence/boto-fix.png)
+
+- ansible able to reach hosts:
+  ![reach hosts](./evidence/reached-hosts.png)
+
+- golden ami:
+  ![golden ami](./evidence/golden-ami.png)
+
+- pipeline run:
+  ![pipeline run](./evidence/pipeline-run.png)
+
+- modified query to get the SG (AI):
+  ```sh
+   SG_ID=$(aws ec2 describe-security-groups --filters Name=group-name,Values=acs730-lab6-sg \
+    --query 'SecurityGroups[0].GroupId' --output text)
+  [[ $SG_ID =~ ^sg-[0-9a-f]+$ ]] && echo "ok: $SG_ID" || echo "bad: $SG_ID"
+  ```
+  Due to drift between manual run from ec2 workstation vs manual GA pipeline run not sharing state. Also after launching, realized elapsed time includes all the mistakes and recoveries so had to redo:
+  - `aws ec2 terminate-instances --instance-ids "$IID"`
+  - the redo the timed run steps: `START=$(date +%s)`, `IID=$(...)`.
+
