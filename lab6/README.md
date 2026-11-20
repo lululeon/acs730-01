@@ -10,7 +10,7 @@ This would be via Session Manager - no ingress into the target host is needed (o
 This means no resources to change; basically this run is idempotent with the last run (the playbook is idempotent).
 
 ## why why deregistering an AMI is not enough
-The AMI will be gone but the EBS that holds the machine image will still be there and billed to your account. The EBS snaphot itself needs to be additionally removed.
+The AMI will be gone but the EBS that holds the machine image will still be there and billed to your account. The EBS snaphot itself needs to be additionally removed. **you need to grab the snapshot ID BEFORE nuking the ami** otherwise it becomes very difficult to determine.: `aws ec2 describe-images --image-ids "$GOLDEN_AMI"`
 
 ## Boot times
 | method | time | tasks |
@@ -45,22 +45,6 @@ Unclear what this is asking for. AI analysis yields:
 
 > Session Manager transfers files through an S3 bucket, acs730-lab6-ssm-<account>, which must be in us-east-1. ansible_aws_ssm_region must also be us-east-1 and match the bucket. If they disagree, the first task fails with PermanentRedirect.
 
-## points raised in lab:
-
-### No runner address anywhere in the workflow
-They don't normally address the runner; not sure why this workflow would be any different. Each run is a fresh vm and the workflow only says what type of runner it wants (`runs-on: ubuntu-latest`).
-
-### The tooling goes in near the top, not between apply and converge.
-We don't want the newly provisioned infrastructure hanging around for too long before convergence; that would be an opportunity for out of band changes (someone else running an apply, manual edits that could introduce changes etc): these could change expected conditions found by ansible and ultimately change what convergence does. This in turn can destroy idempotency. 
-
-It's best to prevent that by running convergence as soon as possible after apply.
-
-### session-manager-plugin is installed explicitly
-The runner does not have software / plugins installed locally and it also does not have anything available in aws. So all needed tools must be explicitly installed.
-
-### The retry loop before the playbook
-This emulates what was done locally to allow hosts time to bootup and connect with SSM Manager before going any further (otherwise the convergence step can fail)
-
 # Other Notes
 - pip install was needed as was boto3. fix:
   ![install fix](./evidence/boto-fix.png)
@@ -84,3 +68,38 @@ This emulates what was done locally to allow hosts time to bootup and connect wi
   - `aws ec2 terminate-instances --instance-ids "$IID"`
   - the redo the timed run steps: `START=$(date +%s)`, `IID=$(...)`.
 
+# Remedy for destroy
+Recipe from LLM:
+```sh
+# 1. Find the instances the pipeline created
+aws ec2 describe-instances \
+    --filters Name=tag:Lab,Values=lab6 Name=tag:Role,Values=web \
+              Name=instance-state-name,Values=pending,running,stopped \
+    --query 'Reservations[].Instances[].[InstanceId,Tags[?Key==`Name`]|[0].Value,State.Name]' \
+    --output text
+
+# 2. Import them (use your real instance IDs; SG_ID is the one you already have)
+terraform import aws_security_group.web "$SG_ID"
+terraform import 'aws_instance.web[0]' i-XXXXXXXX     # acs730-lab6-web-0
+terraform import 'aws_instance.web[1]' i-YYYYYYYY     # acs730-lab6-web-1
+
+# 3. Confirm what it will remove, then destroy and record it
+terraform state list
+terraform destroy -auto-approve 2>&1 | tee ~/teardown.txt
+```
+
+## Other points raised in lab:
+
+### No runner address anywhere in the workflow
+They don't normally address the runner; not sure why this workflow would be any different. Each run is a fresh vm and the workflow only says what type of runner it wants (`runs-on: ubuntu-latest`).
+
+### The tooling goes in near the top, not between apply and converge.
+We don't want the newly provisioned infrastructure hanging around for too long before convergence; that would be an opportunity for out of band changes (someone else running an apply, manual edits that could introduce changes etc): these could change expected conditions found by ansible and ultimately change what convergence does. This in turn can destroy idempotency. 
+
+It's best to prevent that by running convergence as soon as possible after apply.
+
+### session-manager-plugin is installed explicitly
+The runner does not have software / plugins installed locally and it also does not have anything available in aws. So all needed tools must be explicitly installed.
+
+### The retry loop before the playbook
+This emulates what was done locally to allow hosts time to bootup and connect with SSM Manager before going any further (otherwise the convergence step can fail)
