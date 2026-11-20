@@ -16,4 +16,15 @@ The runner does not have software / plugins installed locally and it also does n
 ### The retry loop before the playbook
 This emulates what was done locally to allow hosts time to bootup and connect with SSM Manager before going any further (otherwise the convergence step can fail)
 
+# Notes
+- pip install was needed as was boto3. fix:
+  ![install fix](./evidence/boto-fix.png)
 
+- ansible able to reach hosts:
+  ![reach hosts](./evidence/reached-hosts.png)
+
+- golden ami:
+  ![golden ami](./evidence/golden-ami.png)
+
+- pipeline run:
+  ![pipeline run](./evidence/pipeline-run.png)
