@@ -77,8 +77,28 @@ Experiment 1:
   - 2nd run: same ✅ `ok=8    changed=1`
 
   Expectations matched actuality.
-  Teardown: remove ansible change, replay.
+  Teardown: remove ansible change, replay (restores to `ok=7    changed=0`)
 
+
+Experiment 2:
+- **what `state` does on the dnf task**:
+  - `present` = package is installed (any version that satisfies the name). Already true → task is `ok`, not `changed`.
+  - `latest` = package must be the newest version available from the repos right now. If a newer RPM appeared since last run, Ansible upgrades and reports `changed`.
+- **action**: change the dnf task only:
+  ```yml
+  - name: Install the packages the application needs
+    ansible.builtin.dnf:
+      name:
+        - python3
+        - rsync
+      state: latest   # was: present
+  ```
+- **predicted**:
+  - **1st run** should show `changed` if a newer package is available, otherwise `changed=0` (already newest).
+  - **2nd run** often `changed=0` for sure.
+- **actual**
+  - tbd...
+- **teardown**: put `state: present` back, re-run, confirm `changed=0`.
 
 ---
 
