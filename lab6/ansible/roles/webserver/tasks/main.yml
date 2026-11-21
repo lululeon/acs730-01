@@ -6,9 +6,6 @@
       - rsync
     state: present
 
-- name: break1 - bypass builtins and use shell directly
-  ansible.builtin.shell: mkdir -p /opt/acs730-web/logs
-
 - name: Create the unprivileged service account
   ansible.builtin.user:
     name: "{{ app_user }}"

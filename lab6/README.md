@@ -72,7 +72,12 @@ Experiment 1:
     [ec2-user@ip-172-31-26-131 ansible (main)]$
     ```
   - run ansible on new-ly deployed servers (baseline): ` ok=8    changed=6`
-  - run updated ansible: 1st run: 
+  - run updated ansible:
+    ![ansible change:](./evidence/experiment1.png) 1st run: ✅ `ok=8    changed=1`
+  - 2nd run: same ✅ `ok=8    changed=1`
+
+  Expectations matched actuality.
+  Teardown: remove ansible change, replay.
 
 
 ---
