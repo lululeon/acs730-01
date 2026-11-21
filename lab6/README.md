@@ -45,6 +45,64 @@ Unclear what this is asking for. AI analysis yields:
 
 > Session Manager transfers files through an S3 bucket, acs730-lab6-ssm-<account>, which must be in us-east-1. ansible_aws_ssm_region must also be us-east-1 and match the bucket. If they disagree, the first task fails with PermanentRedirect.
 
+## Experiments
+Setup: All infra was destroyed after lab so will rebuild first, then:
+
+Experiment 1:
+- **action**: run a shell-based command:
+  ```yml
+  - name: break1 - bypass builtins and use shell directly
+    ansible.builtin.shell: mkdir -p /opt/acs730-web/logs
+  ```
+- **predicted**:
+  - **1st run** will report `changed=1` changed.
+  - **2nd run** will still report `changed=1` change because it won't detect the existence of the folder (because the shell builtin will not check first)... it will succeed regardless because of the `-p`.
+  - **3rd run (undo the edit)**: will report `1` changed since the command is gone, but i don't think it will result in the folder being removed necessarily.
+- **actual**
+  - first, make sure baseline resources are there for ansible:
+    ```
+    i-0cc19540cd9136cc1 | SUCCESS => {
+        "changed": false,
+        "ping": "pong"
+    }
+    i-094b9f18662ab2227 | SUCCESS => {
+        "changed": false,
+        "ping": "pong"
+    }
+    [ec2-user@ip-172-31-26-131 ansible (main)]$
+    ```
+  - run ansible on new-ly deployed servers (baseline): ` ok=8    changed=6`
+  - run updated ansible:
+    ![ansible change:](./evidence/experiment1.png) 1st run: ✅ `ok=8    changed=1`
+  - 2nd run: same ✅ `ok=8    changed=1`
+
+  Expectations matched actuality.
+  Teardown: remove ansible change, replay (restores to `ok=7    changed=0`)
+
+
+Experiment 2:
+- **what `state` does on the dnf task**:
+  - `present` = package is installed (any version that satisfies the name). Already true → task is `ok`, not `changed`.
+  - `latest` = package must be the newest version available from the repos right now. If a newer RPM appeared since last run, Ansible upgrades and reports `changed`.
+- **action**: change the dnf task only:
+  ```yml
+  - name: Install the packages the application needs
+    ansible.builtin.dnf:
+      name:
+        - python3
+        - rsync
+      state: latest   # was: present
+  ```
+- **predicted**:
+  - **1st run** should show `changed` if a newer package is available, otherwise `changed=0` (already newest).
+  - **2nd run** often `changed=0` for sure.
+- **actual**
+  - was `ok=7    changed=0`. I guess there is no latest python :(
+  - 2nd run: ✅ `ok=7    changed=0`.
+- **teardown**: put `state: present` back, re-run, confirm `changed=0`. ✅
+
+---
+
 # Other Notes
 - pip install was needed as was boto3. fix:
   ![install fix](./evidence/boto-fix.png)
