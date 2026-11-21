@@ -45,6 +45,24 @@ Unclear what this is asking for. AI analysis yields:
 
 > Session Manager transfers files through an S3 bucket, acs730-lab6-ssm-<account>, which must be in us-east-1. ansible_aws_ssm_region must also be us-east-1 and match the bucket. If they disagree, the first task fails with PermanentRedirect.
 
+## Experiments
+Setup: All infra was destroyed after lab so will rebuild first, then:
+
+Experiment 1:
+- **action**: run a shell-based command:
+  ```yml
+  - name: break1 - bypass builtins and use shell directly
+    ansible.builtin.shell: mkdir -p /opt/acs730-web/logs
+  ```
+- **predicted**:
+  - **1st run** will report `changed=1` changed.
+  - **2nd run** will still report `changed=1` change because it won't detect the existence of the folder (because the shell builtin will not check first)... it will succeed regardless because of the `-p`.
+  - **3rd run (undo the edit)**: will report `1` changed since the command is gone, but i don't think it will result in the folder being removed necessarily.
+- **actual**
+  - tbd...
+
+---
+
 # Other Notes
 - pip install was needed as was boto3. fix:
   ![install fix](./evidence/boto-fix.png)
