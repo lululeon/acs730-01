@@ -98,8 +98,8 @@ Experiment 2:
   - **2nd run** often `changed=0` for sure.
 - **actual**
   - was `ok=7    changed=0`. I guess there is no latest python :(
-  - 2nd run:
-- **teardown**: put `state: present` back, re-run, confirm `changed=0`.
+  - 2nd run: ✅ `ok=7    changed=0`.
+- **teardown**: put `state: present` back, re-run, confirm `changed=0`. ✅
 
 ---
 
