@@ -59,7 +59,21 @@ Experiment 1:
   - **2nd run** will still report `changed=1` change because it won't detect the existence of the folder (because the shell builtin will not check first)... it will succeed regardless because of the `-p`.
   - **3rd run (undo the edit)**: will report `1` changed since the command is gone, but i don't think it will result in the folder being removed necessarily.
 - **actual**
-  - tbd...
+  - first, make sure baseline resources are there for ansible:
+    ```
+    i-0cc19540cd9136cc1 | SUCCESS => {
+        "changed": false,
+        "ping": "pong"
+    }
+    i-094b9f18662ab2227 | SUCCESS => {
+        "changed": false,
+        "ping": "pong"
+    }
+    [ec2-user@ip-172-31-26-131 ansible (main)]$
+    ```
+  - run ansible on new-ly deployed servers (baseline): ` ok=8    changed=6`
+  - run updated ansible: 1st run: 
+
 
 ---
 
