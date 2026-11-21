@@ -97,7 +97,8 @@ Experiment 2:
   - **1st run** should show `changed` if a newer package is available, otherwise `changed=0` (already newest).
   - **2nd run** often `changed=0` for sure.
 - **actual**
-  - tbd...
+  - was `ok=7    changed=0`. I guess there is no latest python :(
+  - 2nd run:
 - **teardown**: put `state: present` back, re-run, confirm `changed=0`.
 
 ---

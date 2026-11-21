@@ -4,7 +4,7 @@
     name:
       - python3
       - rsync
-    state: latest
+    state: present
 
 - name: Create the unprivileged service account
   ansible.builtin.user:
