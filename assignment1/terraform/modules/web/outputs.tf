@@ -14,10 +14,11 @@ output "web_url" {
   description = "URL to curl once the instance has booted. Real AWS only."
   value       = "http://${aws_instance.web.public_ip}/"
 }
-output "artifact_bucket" {
-  description = "Name of the optional bucket, or null when it was not created."
-  value       = one(aws_s3_bucket.artifacts[*].bucket)
-}
+# lab5 specific - not needed and messes up tf?
+# output "artifact_bucket" {
+#   description = "Name of the optional bucket, or null when it was not created."
+#   value       = one(aws_s3_bucket.artifacts[*].bucket)
+# }
 output "provider_target" {
   description = "Which endpoint this run actually talked to."
   value       = local.provider_target
