@@ -53,8 +53,30 @@ variable "instance_type" {
     error_message = "Stay small: t3.micro or t3.small. The term budget is $50 in total."
   }
 }
-variable "create_artifact_bucket" {
-  description = "Create the optional artifact bucket. Gated with count, not for_each."
-  type        = bool
-  default     = false
+
+# no longer used, leftover from lab5.
+# variable "create_artifact_bucket" {
+#   description = "Unused legacy flag from lab5 (artifacts bucket removed for Academy SCP)."
+#   type        = bool
+#   default     = false
+# }
+
+variable "environment" {
+  description = "Environment name (dev/staging/prod). Used to uniquify regional names like alarms."
+  type        = string
+  validation {
+    condition     = contains(["dev", "staging", "prod"], var.environment)
+    error_message = "environment must be one of: dev, staging, prod."
+  }
+}
+
+variable "ssm_parameter_name" {
+  description = "Existing SSM parameter name to read (created out of band with put-parameter)."
+  type        = string
+}
+
+variable "alarm_cpu_threshold" {
+  description = "CPUUtilization percent that trips the CloudWatch alarm."
+  type        = number
+  default     = 80
 }

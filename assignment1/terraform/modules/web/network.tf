@@ -5,7 +5,7 @@ data "aws_availability_zones" "available" {
 }
 
 locals {
-  name = "${var.project}-${var.owner}"
+  name = "${var.project}-${var.owner}-${var.environment}"
 
   # Single source of truth for "where did this run actually point".
   provider_target = "aws (${data.aws_region.current.name})"
