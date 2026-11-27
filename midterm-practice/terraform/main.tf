@@ -229,10 +229,11 @@ output "web_security_group_id" {
   value       = aws_security_group.web.id
 }
 
-output "artifact_bucket_name" {
-  description = "Artifact bucket name, or null when enable_artifact_bucket is false."
-  value       = one(aws_s3_bucket.artifacts[*].bucket)
-}
+# lab5 specific - not needed and messes up tf?
+# output "artifact_bucket_name" {
+#   description = "Artifact bucket name, or null when enable_artifact_bucket is false."
+#   value       = one(aws_s3_bucket.artifacts[*].bucket)
+# }
 
 output "provider_target" {
   description = "Which API this configuration was planned against."

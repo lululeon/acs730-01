@@ -42,10 +42,11 @@ resource "aws_instance" "web" {
   tags = merge(local.common_tags, { Name = "${local.name}-web" })
 }
 
-# not using localstack - remove optionality via count
-resource "aws_s3_bucket" "artifacts" {
-  bucket        = "${local.name}-artifacts"
-  force_destroy = true
+# lab5 specific - not needed and messes up tf?
+# # not using localstack - remove optionality via count
+# resource "aws_s3_bucket" "artifacts" {
+#   bucket        = "${local.name}-artifacts"
+#   force_destroy = true
 
-  tags = merge(local.common_tags, { Name = "${local.name}-artifacts" })
-}
+#   tags = merge(local.common_tags, { Name = "${local.name}-artifacts" })
+# }
