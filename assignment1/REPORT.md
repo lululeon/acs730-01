@@ -29,3 +29,22 @@ So the relevant trust policy would look like this:
 - The **aud** claim shows that amazon STS (secure token service) is the audience: when Github connects to AWS, it is specifically connecting to STS to obtain the necessary shortlived tokens.
 
 This approach is not being used because apparently aws academy restricts creation of the oidc provider & role.
+
+# ssm param command (put-parameter)
+this was created out of band (not via terraform; terraform reads it in a data block). Command format:
+
+```sh
+aws ssm put-parameter \
+  --name /acs730/assn1/db_password \
+  --value 'xxxxx' \
+  --type SecureString \
+  --overwrite
+```
+
+which returned:
+```json
+{
+    "Version": 1,
+    "Tier": "Standard"
+}
+```

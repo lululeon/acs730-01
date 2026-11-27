@@ -25,11 +25,13 @@ resource "aws_instance" "web" {
   subnet_id              = aws_subnet.public[local.first_subnet_key].id
   vpc_security_group_ids = [aws_security_group.web.id]
 
+  # SSM value is read via data source (Task 6). Kept out of the HTML on purpose.
   user_data = <<-EOT
     #!/bin/bash
     set -euo pipefail
+    export APP_DB_PASSWORD='${data.aws_ssm_parameter.db_password.value}'
     dnf -y install nginx
-    echo "<h1>ACS730 Lab 5 - ${local.name}</h1>" > /usr/share/nginx/html/index.html
+    echo "<h1>ACS730 Assn1 - ${local.name}</h1>" > /usr/share/nginx/html/index.html
     systemctl enable --now nginx
   EOT
 

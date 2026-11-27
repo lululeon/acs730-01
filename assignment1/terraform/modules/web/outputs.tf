@@ -23,3 +23,13 @@ output "provider_target" {
   description = "Which endpoint this run actually talked to."
   value       = local.provider_target
 }
+
+output "ssm_parameter_name" {
+  description = "SSM parameter Terraform read (value is sensitive; not exported)."
+  value       = data.aws_ssm_parameter.db_password.name
+}
+
+output "cpu_alarm_name" {
+  description = "CloudWatch alarm watching the web instance CPU."
+  value       = aws_cloudwatch_metric_alarm.web_cpu.alarm_name
+}
