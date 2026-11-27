@@ -8,7 +8,7 @@ locals {
   name = "${var.project}-${var.owner}"
 
   # Single source of truth for "where did this run actually point".
-  provider_target = var.use_localstack ? "localstack (${var.localstack_endpoint})" : "aws (${data.aws_region.current.name})"
+  provider_target = "aws (${data.aws_region.current.name})"
 
   # Fold the AZ lookup in here, so the resource block below has no logic
   # in it at all -- just assignments.

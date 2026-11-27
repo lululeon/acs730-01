@@ -1,10 +1,6 @@
 # AMI ids are regional and change whenever Amazon publishes a build, so a
-# hardcoded one goes stale. LocalStack has no AMI catalogue, so there the
-# data source is counted out and a placeholder is used -- the one place
-# the two targets really differ.
+# hardcoded one goes stale.
 data "aws_ami" "al2023" {
-  count = var.use_localstack ? 0 : 1
-
   most_recent = true
   owners      = ["amazon"]
 
@@ -15,7 +11,9 @@ data "aws_ami" "al2023" {
 }
 
 locals {
-  ami_id = var.use_localstack ? var.localstack_ami_id : data.aws_ami.al2023[0].id
+  # not using localstack - removed optionality via count, so no longer dealing with a list.
+  # ami_id = data.aws_ami.al2023[0].id
+  ami_id = data.aws_ami.al2023.id
 
   # keys() on a map returns sorted order, so this is stable across runs.
   first_subnet_key = keys(local.public_subnets)[0]
@@ -44,10 +42,8 @@ resource "aws_instance" "web" {
   tags = merge(local.common_tags, { Name = "${local.name}-web" })
 }
 
-# The optional bucket: count, not for_each.
+# not using localstack - remove optionality via count
 resource "aws_s3_bucket" "artifacts" {
-  count = var.create_artifact_bucket ? 1 : 0
-
   bucket        = "${local.name}-artifacts"
   force_destroy = true
 

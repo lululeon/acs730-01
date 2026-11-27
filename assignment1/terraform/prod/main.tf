@@ -17,13 +17,30 @@ terraform {
   }
 }
 
+# don't want tons of files, just put everything here.
+locals {
+  owner       = "lluttero"
+  aws_region  = "us-east-1"
+  common_tags = {
+    Course = "ACS730"
+    Lab    = "assn1"
+    Owner  = local.owner
+  }
+}
+
+provider "aws" {
+  region = local.aws_region
+  default_tags {
+    tags = local.common_tags
+  }
+}
+
 module "web" {
   # use the spec for the web vm
   source = "../modules/web"
 
   project     = "acs730-assn1"
-  owner       = var.owner
-  environment = "prod"
+  owner       = local.owner
 
   vpc_cidr = "10.30.0.0/16"
   public_subnets = {
@@ -33,7 +50,5 @@ module "web" {
 
   instance_type          = "t3.micro"
   create_artifact_bucket = true
-  ssm_parameter_name     = "/acs730/assn1/prod/db_password"
-  alarm_cpu_threshold    = 80
 }
 
