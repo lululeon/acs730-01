@@ -1,0 +1,6 @@
+{
+    "Name": "/acs730/assn1/db_password",
+    "Type": "SecureString",
+    "Version": 1,
+    "LastModifiedDate": "2026-11-27T14:34:16.313000-05:00"
+}

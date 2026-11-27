@@ -39,3 +39,8 @@ approval:
 ![approval dialog](./evidence/approval-dialog.png)
 
 see runs in [staging-apply](./evidence/staging-apply.txt) and [prod-apply](./evidence/prod-apply.txt).
+
+# checks in AWS
+![vpcs](./evidence/vpcs.png)
+![instances](./evidence/instances.png)
+![cloudwatch alarm](./evidence/cloudwatch-alarm.png)

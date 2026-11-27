@@ -1,0 +1,64 @@
+{
+    "MetricAlarms": [
+        {
+            "AlarmName": "acs730-assn1-lluttero-prod-web-cpu",
+            "AlarmArn": "arn:aws:cloudwatch:us-east-1:946258861229:alarm:acs730-assn1-lluttero-prod-web-cpu",
+            "AlarmDescription": "Average CPUUtilization on the acs730-assn1-lluttero-prod web instance",
+            "AlarmConfigurationUpdatedTimestamp": "2026-11-27T14:54:52.650000-05:00",
+            "ActionsEnabled": true,
+            "OKActions": [],
+            "AlarmActions": [],
+            "InsufficientDataActions": [],
+            "StateValue": "OK",
+            "StateReason": "Threshold Crossed: 1 datapoint [6.090280384007E-4 (27/11/26 19:50:00)] was not greater than the threshold (80.0) and 1 missing datapoint was treated as [NonBreaching].",
+            "StateReasonData": "{\"version\":\"1.0\",\"queryDate\":\"2026-11-27T19:55:57.333+0000\",\"startDate\":\"2026-11-27T19:50:00.000+0000\",\"statistic\":\"Average\",\"period\":60,\"recentDatapoints\":[6.090280384007E-4],\"threshold\":80.0,\"evaluatedDatapoints\":[{\"timestamp\":\"2026-11-27T19:50:00.000+0000\",\"sampleCount\":1.0,\"value\":6.090280384007E-4}]}",
+            "StateUpdatedTimestamp": "2026-11-27T14:55:57.334000-05:00",
+            "MetricName": "CPUUtilization",
+            "Namespace": "AWS/EC2",
+            "Statistic": "Average",
+            "Dimensions": [
+                {
+                    "Name": "InstanceId",
+                    "Value": "i-04573e72f50099ae2"
+                }
+            ],
+            "Period": 60,
+            "EvaluationPeriods": 2,
+            "Threshold": 80.0,
+            "ComparisonOperator": "GreaterThanThreshold",
+            "TreatMissingData": "notBreaching",
+            "StateTransitionedTimestamp": "2026-11-27T14:55:57.334000-05:00"
+        },
+        {
+            "AlarmName": "acs730-assn1-lluttero-staging-web-cpu",
+            "AlarmArn": "arn:aws:cloudwatch:us-east-1:946258861229:alarm:acs730-assn1-lluttero-staging-web-cpu",
+            "AlarmDescription": "Average CPUUtilization on the acs730-assn1-lluttero-staging web instance",
+            "AlarmConfigurationUpdatedTimestamp": "2026-11-27T14:51:38.424000-05:00",
+            "ActionsEnabled": true,
+            "OKActions": [],
+            "AlarmActions": [],
+            "InsufficientDataActions": [],
+            "StateValue": "OK",
+            "StateReason": "Threshold Crossed: 1 datapoint [0.0022447365544775 (27/11/26 19:50:00)] was not greater than the threshold (80.0) and 1 missing datapoint was treated as [NonBreaching].",
+            "StateReasonData": "{\"version\":\"1.0\",\"queryDate\":\"2026-11-27T19:53:23.389+0000\",\"startDate\":\"2026-11-27T19:50:00.000+0000\",\"statistic\":\"Average\",\"period\":60,\"recentDatapoints\":[0.0022447365544775],\"threshold\":80.0,\"evaluatedDatapoints\":[{\"timestamp\":\"2026-11-27T19:50:00.000+0000\",\"sampleCount\":1.0,\"value\":0.0022447365544775}]}",
+            "StateUpdatedTimestamp": "2026-11-27T14:53:23.390000-05:00",
+            "MetricName": "CPUUtilization",
+            "Namespace": "AWS/EC2",
+            "Statistic": "Average",
+            "Dimensions": [
+                {
+                    "Name": "InstanceId",
+                    "Value": "i-0c58b3204bc7d5423"
+                }
+            ],
+            "Period": 60,
+            "EvaluationPeriods": 2,
+            "Threshold": 80.0,
+            "ComparisonOperator": "GreaterThanThreshold",
+            "TreatMissingData": "notBreaching",
+            "StateTransitionedTimestamp": "2026-11-27T14:53:23.390000-05:00"
+        }
+    ],
+    "CompositeAlarms": [],
+    "LogAlarms": []
+}
