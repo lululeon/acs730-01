@@ -1,0 +1,55 @@
+name: Assignment 1 CD
+
+on:
+  pull_request: { paths: ['assignment1/**'] }
+  push: { branches: [main], paths: ['assignment1/**'] }
+
+concurrency: { group: assignment1-terraform }
+
+jobs:
+  staging:
+    # apply on push to main (merge)
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    # github environment set up on repo settings
+    environment: staging
+    defaults:
+      run:
+        working-directory: assignment1/terraform/staging
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: ${{ vars.AWS_REGION }}
+      - uses: hashicorp/setup-terraform@v3
+      - run: |
+          terraform init && terraform validate && terraform plan -out=tfplan
+      - run: |
+          terraform apply -auto-approve tfplan
+
+  prod:
+    # apply on manual approve
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    # github environment set up on repo settings
+    environment: prod
+    defaults:
+      run:
+        working-directory: assignment1/terraform/prod
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: ${{ vars.AWS_REGION }}
+      - uses: hashicorp/setup-terraform@v3
+      - run: |
+          terraform init && terraform validate && terraform plan -out=tfplan
+      - run: |
+          terraform apply -auto-approve tfplan
+ 
